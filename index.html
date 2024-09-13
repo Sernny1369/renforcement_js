@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="index.css">
+    <script src="index.js"></script>
+    <style src="index.css"></style>
+</head>
+
+<body>
+
+    <div></div>
+    <button id="cacherFormBtn">nouveau</button>
+    <button value="delete" onclick="delet()"><img src="" alt="X">supprimer</button>
+
+    <div>
+        <h1>A FAIRE</h1>
+        <ul id="liste">
+            <li>premier élément</li>
+        </ul>
+    </div>
+    <div>
+        <h1>EN COURS</h1>
+        <ul id="listeI"></ul>
+    </div>
+    <div>
+        <h1>FINI</h1>
+        <ul id="listeF"></ul>
+    </div>
+
+    <form action="" id="formulaire">
+        <div class="form-group">
+            <label for="titre">Entrer un titre</label>
+            <input type="text" id="titre" placeholder="Titre">
+        </div>
+
+        <div class="form-group">
+            <label for="description">Une description</label>
+            <input type="text" id="description" placeholder="Description">
+        </div>
+
+        <div class="form-group">
+            <label for="etat">L'état d'avancement</label>
+            <div class="radio-group">
+                <label for="to_do">
+                    <input type="radio" id="to_do" name="etat" value="to_do"> À faire
+                </label>
+                <label for="in_progress">
+                    <input type="radio" id="in_progress" name="etat" value="in_progress"> En cours
+                </label>
+                <label for="finish">
+                    <input type="radio" id="finish" name="etat" value="finish"> Terminé
+                </label>
+            </div>
+        </div>
+
+        <div class="add">
+            <button class="add" type="button" onclick="ajouterTicket()">Ajouter</button>
+        </div>
+    </form>
+
+</body>
+
+<script>
+    let to_do = [];
+    let in_progress = [];
+    let finish = [];
+    let ticketEnCoursDeModification = null;
+
+    function getEtatAvancement() {
+        let radios = document.querySelectorAll('input[name="etat"]');
+        for (let radio of radios) {
+            if (radio.checked) {
+                return radio.value;
+            }
+        }
+        return null;
+    }
+
+    function ajouterTicket() {
+        let titre = document.getElementById("titre").value;
+        let description = document.getElementById("description").value;
+        let etat = getEtatAvancement();
+
+        if (!titre || !description || !etat) {
+            alert("Veuillez remplir tous les champs et sélectionner un état.");
+            return;
+        }
+
+        let newTicket = new Ticket(titre, description, etat);
+
+        if (etat === "to_do") {
+            to_do.push(newTicket);
+            afficherListe('liste', to_do);
+        } else if (etat === "in_progress") {
+            in_progress.push(newTicket);
+            afficherListe('listeI', in_progress);
+        } else if (etat === "finish") {
+            finish.push(newTicket);
+            afficherListe('listeF', finish);
+        }
+
+        document.getElementById("titre").value = '';
+        document.getElementById("description").value = '';
+        document.querySelector('input[name="etat"]:checked').checked = false;
+    }
+
+    function afficherListe(listeId, listeTickets) {
+        let listeElement = document.getElementById(listeId);
+        listeElement.innerHTML = '';
+
+        listeTickets.forEach((ticket, index) => {
+            let li = document.createElement("li");
+            li.textContent = `${ticket.titre} - ${ticket.description}`;
+
+            let modifierBtn = document.createElement("button");
+            modifierBtn.textContent = "Modifier";
+            modifierBtn.onclick = function () {
+                preparerModification(ticket, listeTickets, index);
+            };
+
+            li.appendChild(modifierBtn);
+            listeElement.appendChild(li);
+        });
+    }
+
+    function preparerModification(ticket, listeTickets, index) {
+        document.getElementById("titre").value = ticket.titre;
+        document.getElementById("description").value = ticket.description;
+        document.querySelector(`input[name="etat"][value="${ticket.etat}"]`).checked = true;
+
+        ticketEnCoursDeModification = { ticket, listeTickets, index };
+
+        let ancienModifierBtn = document.getElementById("modifier");
+        if (ancienModifierBtn) {
+            ancienModifierBtn.remove();
+        }
+
+        let modifierBtn = document.createElement("button");
+        modifierBtn.id = "modifier";
+        modifierBtn.textContent = "Modifier";
+        modifierBtn.onclick = function (event) {
+            event.preventDefault(); 
+            modifierTicket();
+        };
+
+        document.querySelector(".add").appendChild(modifierBtn);
+        document.querySelector('[onclick="ajouterTicket()"]').style.display = "none";
+    }
+
+    function modifierTicket() {
+        if (ticketEnCoursDeModification) {
+            let titre = document.getElementById("titre").value;
+            let description = document.getElementById("description").value;
+            let etat = getEtatAvancement();
+
+            let { ticket, listeTickets, index } = ticketEnCoursDeModification;
+
+            ticket.modifierT(titre);
+            ticket.modifierD(description);
+            ticket.modifierE(etat);
+
+            let ancienneListeId = '';
+            if (ticket.etat === "to_do") {
+                ancienneListeId = 'liste';
+            } else if (ticket.etat === "in_progress") {
+                ancienneListeId = 'listeI';
+            } else if (ticket.etat === "finish") {
+                ancienneListeId = 'listeF';
+            }
+            let ancienneListe = document.getElementById(ancienneListeId);
+            ancienneListe.querySelectorAll('li').forEach((li, idx) => {
+                if (idx === index) {
+                    li.remove();
+                }
+            });
+
+            if (etat === "to_do") {
+                to_do.push(ticket);
+                afficherListe('liste', to_do);
+            } else if (etat === "in_progress") {
+                in_progress.push(ticket);
+                afficherListe('listeI', in_progress);
+            } else if (etat === "finish") {
+                finish.push(ticket);
+                afficherListe('listeF', finish);
+            }
+
+            document.getElementById("titre").value = '';
+            document.getElementById("description").value = '';
+            document.querySelector('input[name="etat"]:checked').checked = false;
+
+            let modifierBtn = document.getElementById("modifier");
+            if (modifierBtn) {
+                modifierBtn.remove();
+            }
+            document.querySelector('[onclick="ajouterTicket()"]').style.display = "inline";
+
+            ticketEnCoursDeModification = null;
+        }
+    }
+
+    function toggleFormulaire() {
+        let formulaire = document.getElementById('formulaire');
+        if (formulaire.style.display === 'none' || !formulaire.style.display) {
+            formulaire.style.display = 'block';
+        } else {
+            formulaire.style.display = 'none';
+        }
+    }
+
+    let cacherFormBtn = document.getElementById('cacherFormBtn');
+    cacherFormBtn.addEventListener('click', toggleFormulaire);
+
+</script>
+
+</html>
