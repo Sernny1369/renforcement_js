@@ -7,63 +7,61 @@
     <title>Document</title>
     <link rel="stylesheet" href="index.css">
     <script src="index.js"></script>
-    <style src="index.css"></style>
 </head>
 
 <body>
+    <div class="container">
+        <form action="" id="formulaire">
+            <div class="form-group">
+                <label for="titre">Entrer un titre</label>
+                <input type="text" id="titre" placeholder="Titre">
+            </div>
 
-    <div></div>
-    <button id="cacherFormBtn">nouveau</button>
-    <button value="delete" onclick="delet()"><img src="" alt="X">supprimer</button>
+            <div class="form-group">
+                <label for="description">Une description</label>
+                <input type="text" id="description" placeholder="Description">
+            </div>
 
-    <div>
-        <h1>A FAIRE</h1>
-        <ul id="liste">
-            <li>premier élément</li>
-        </ul>
-    </div>
-    <div>
-        <h1>EN COURS</h1>
-        <ul id="listeI"></ul>
-    </div>
-    <div>
-        <h1>FINI</h1>
-        <ul id="listeF"></ul>
-    </div>
+            <div class="form-group">
+                <label for="etat">L'état d'avancement</label>
+                <div class="radio-group">
+                    <label for="to_do">
+                        <input type="radio" id="to_do" name="etat" value="to_do"> À faire
+                    </label>
+                    <label for="in_progress">
+                        <input type="radio" id="in_progress" name="etat" value="in_progress"> En cours
+                    </label>
+                    <label for="finish">
+                        <input type="radio" id="finish" name="etat" value="finish"> Terminé
+                    </label>
+                </div>
+            </div>
 
-    <form action="" id="formulaire">
-        <div class="form-group">
-            <label for="titre">Entrer un titre</label>
-            <input type="text" id="titre" placeholder="Titre">
-        </div>
+            <div class="add">
+                <button class="add" type="button" onclick="ajouterTicket()">Ajouter</button>
+            </div>
+        </form>
 
-        <div class="form-group">
-            <label for="description">Une description</label>
-            <input type="text" id="description" placeholder="Description">
-        </div>
+        <button id="cacherFormBtn">nouveau</button>
 
-        <div class="form-group">
-            <label for="etat">L'état d'avancement</label>
-            <div class="radio-group">
-                <label for="to_do">
-                    <input type="radio" id="to_do" name="etat" value="to_do"> À faire
-                </label>
-                <label for="in_progress">
-                    <input type="radio" id="in_progress" name="etat" value="in_progress"> En cours
-                </label>
-                <label for="finish">
-                    <input type="radio" id="finish" name="etat" value="finish"> Terminé
-                </label>
+        <div class="liste-container">
+            <div>
+                <h1>A FAIRE</h1>
+                <ul id="liste" class="liste">
+                </ul>
+            </div>
+            <div>
+                <h1>EN COURS</h1>
+                <ul id="listeI" class="liste"></ul>
+            </div>
+            <div>
+                <h1>FINI</h1>
+                <ul id="listeF" class="liste"></ul>
             </div>
         </div>
-
-        <div class="add">
-            <button class="add" type="button" onclick="ajouterTicket()">Ajouter</button>
-        </div>
-    </form>
+    </div>
 
 </body>
-
 <script>
     let to_do = [];
     let in_progress = [];
@@ -106,6 +104,7 @@
         document.getElementById("titre").value = '';
         document.getElementById("description").value = '';
         document.querySelector('input[name="etat"]:checked').checked = false;
+        toggleFormulaire()
     }
 
     function afficherListe(listeId, listeTickets) {
@@ -119,9 +118,17 @@
             let modifierBtn = document.createElement("button");
             modifierBtn.textContent = "Modifier";
             modifierBtn.onclick = function () {
+                toggleFormulaire();
                 preparerModification(ticket, listeTickets, index);
             };
 
+            let supprimerBtn = document.createElement("button");
+            supprimerBtn.textContent = "Supprimer";
+            supprimerBtn.onclick = function () {
+                supprimerElement(listeId, index, listeTickets);
+            };
+
+            li.appendChild(supprimerBtn);
             li.appendChild(modifierBtn);
             listeElement.appendChild(li);
         });
@@ -143,15 +150,29 @@
         modifierBtn.id = "modifier";
         modifierBtn.textContent = "Modifier";
         modifierBtn.onclick = function (event) {
-            event.preventDefault(); 
+            event.preventDefault();
             modifierTicket();
         };
 
+        let returnbtn = document.createElement("button");
+        returnbtn.id = "retour";
+        returnbtn.textContent = "annuler";
+        returnbtn.onclick = function (event) {
+            event.preventDefault();
+            buttonback();
+        };
+
         document.querySelector(".add").appendChild(modifierBtn);
+        document.querySelector(".add").appendChild(returnbtn);
         document.querySelector('[onclick="ajouterTicket()"]').style.display = "none";
     }
 
     function modifierTicket() {
+        let formulaire = document.getElementById("formulaire");
+    if (formulaire.style.display === "none" || formulaire.style.display === "") {
+        formulaire.style.display = "block";
+    }
+
         if (ticketEnCoursDeModification) {
             let titre = document.getElementById("titre").value;
             let description = document.getElementById("description").value;
@@ -189,18 +210,43 @@
                 afficherListe('listeF', finish);
             }
 
+            // Réinitialisation du formulaire
             document.getElementById("titre").value = '';
             document.getElementById("description").value = '';
             document.querySelector('input[name="etat"]:checked').checked = false;
 
+            // Réinitialisation des boutons
             let modifierBtn = document.getElementById("modifier");
+            let returnbtn = document.getElementById("retour")
             if (modifierBtn) {
                 modifierBtn.remove();
+            }
+            if (returnbtn) {
+                returnbtn.remove();
             }
             document.querySelector('[onclick="ajouterTicket()"]').style.display = "inline";
 
             ticketEnCoursDeModification = null;
         }
+    }
+
+    function buttonback() {
+        let modifierBtn = document.getElementById("modifier");
+        let returnbtn = document.getElementById("retour")
+        if (modifierBtn) {
+            modifierBtn.remove();
+        }
+        if (returnbtn) {
+            returnbtn.remove();
+        }
+        document.querySelector('[onclick="ajouterTicket()"]').style.display = "inline";
+        document.querySelector('[onclick="buttonback()"]').style.display = "none";
+        toggleFormulaire()
+    }
+
+    function supprimerElement(listeId, index, listeTickets) {
+        listeTickets.splice(index, 1);
+        afficherListe(listeId, listeTickets);
     }
 
     function toggleFormulaire() {
@@ -211,6 +257,8 @@
             formulaire.style.display = 'none';
         }
     }
+
+
 
     let cacherFormBtn = document.getElementById('cacherFormBtn');
     cacherFormBtn.addEventListener('click', toggleFormulaire);
