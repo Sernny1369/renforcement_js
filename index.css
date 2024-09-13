@@ -1,23 +1,47 @@
-div{
-    grid-column: auto;
-}
-
+/* Style général du corps de la page */
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Arial', sans-serif;
+    background-image: url("https://images7.alphacoders.com/135/1359466.png");
+    background-size: cover;
     margin: 0;
-    padding: 20px;
-    background-color: black;
-    color:white
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
 }
 
-form {
-    max-width: 400px;
-    margin: auto;
-    background: grey;
-    padding: 20px;
+/* Conteneur principal pour centrer le contenu */
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #ffffff;
     border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    position: sticky;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: 100%;
+    max-width: 1200px;
+    height: 500px; /* Hauteur fixe pour le conteneur */
+    box-sizing: border-box;
+    overflow: hidden; /* Pour masquer tout dépassement non voulu */
+    opacity: 0.33;
+}
+.container:hover{
+    opacity: 0.9;
+}
+
+/* Style pour le formulaire */
+form {
+    width: 100%;
+    max-width: 600px;
+    margin-bottom: 20px;
+    background: #ffffff;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: none;
 }
 
 .form-group {
@@ -26,34 +50,142 @@ form {
 
 label {
     display: block;
-    font-weight: bold;
     margin-bottom: 5px;
+    font-weight: 600;
+    color: #333;
 }
 
 input[type="text"] {
-    width: 100%;
+    width: calc(100% - 20px);
     padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 16px;
-}
-
-input[type="radio"] {
-    margin-right: 5px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box;
 }
 
 .radio-group label {
-    margin-right: 15px;
+    display: block;
+    margin-bottom: 5px;
 }
 
-.radio-group {
-    margin-top: 5px;
+input[type="radio"] {
+    margin-right: 10px;
 }
 
-input :disabled{
-    background-color: #e9ecef;
+/* Style des boutons */
+button {
+    background-color: #007bff;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s, transform 0.2s;
 }
 
-.add{
-    align-items: center;
+button:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
+/* Style du bouton de cacher/montrer le formulaire */
+#cacherFormBtn {
+    background-color: #28a745;
+    margin-top: 20px;
+}
+
+#cacherFormBtn:hover {
+    background-color: #218838;
+}
+
+/* Liste des tâches */
+.liste-container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto; /* Permet le défilement vertical si nécessaire */
+    padding: 0 10px;
+    box-sizing: border-box;
+}
+
+.liste {
+    width: 100%;
+    max-height: 100%; /* Utilise toute la hauteur du parent */
+    overflow-y: auto; /* Scroll dans chaque liste si nécessaire */
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+li {
+    background: #ffffff;
+    margin-bottom: 10px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+li button {
+    margin-left: 10px;
+}
+
+/* Titres des sections */
+h1 {
+    font-size: 1.5em;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+/* Messages d'alerte */
+.alert, .message {
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+
+.alert {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.alert.success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.alert.error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.message {
+    border: 1px solid #ddd;
+}
+
+.message.info {
+    background: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+}
+
+.message.success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
 }
